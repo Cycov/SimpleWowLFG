@@ -1,0 +1,17 @@
+## Title: LookingForGroup
+## Notes: Making spamming LFG more easy
+## Version: 1.0
+## Author: Cidra
+## Interface: 11302
+## SavedVariablesPerCharacter: LFGChannels, LFGInterval
+
+lib\Debug.lua
+lib\Functions.lua
+lib\Events.lua
+lib\UI.Buttons.lua
+lib\UI.lua
+lib\Components.Timers.lua
+lib\Console.lua
+LookingForGroup.Constants.lua
+LookingForGroup.Parser.lua
+LookingForGroup.lua
