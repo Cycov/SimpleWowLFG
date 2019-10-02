@@ -15,6 +15,9 @@ function Quicko.Components.Timers:ScheduleTimer(name, interval, repeating, enabl
 	if enabled == nil then
 		enabled = true
 	end
+	if type(interval) ~= 'number' then
+		error('Expected number got ' .. type(interval) .. ' for parameter "interval"')
+	end
 
 	if timer then
 		print('Timer ' .. name .. ' already exists')
@@ -100,10 +103,10 @@ function Quicko.Components.Timers:EnableTimer(timer)
 		error('Expected timer object, got ' .. type(timer))
 	end
 
-	for index,value in pairs(Components.Timers.activeTimers) do
+	for index,value in pairs(Quicko.Components.Timers.activeTimers) do
 		if (value.name == timer.name) then
 			value.enabled = true
-			Components.Timers.activeTimers[index] = value
+			Quicko.Components.Timers.activeTimers[index] = value
 		end
 	end
 end
@@ -111,6 +114,9 @@ end
 function Quicko.Components.Timers:ChangeInterval(timer, interval)
 	if timer == nil then
 		error('Expected timer, got nil')
+	end
+	if type(interval) ~= 'number' then
+		error('Expected number got ' .. type(interval) .. ' for parameter "interval"')
 	end
 	
 	for index,value in pairs(Quicko.Components.Timers.activeTimers) do

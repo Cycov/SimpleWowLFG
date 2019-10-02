@@ -12,6 +12,7 @@ lib\UI.Buttons.lua
 lib\UI.lua
 lib\Components.Timers.lua
 lib\Console.lua
+SimpleWowLFG.Enums.lua
 SimpleWowLFG.Constants.lua
 SimpleWowLFG.Parser.lua
 SimpleWowLFG.lua

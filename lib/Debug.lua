@@ -6,7 +6,7 @@ if Quicko.Debug == nil then
     Quicko.Debug = {}
 end
 
-function Quicko.Debug:PrintTable(input, levels, currentLevel)
+function Quicko.Debug:Log(input, levels, currentLevel)
     if levels == nil then
         levels = 0
     end
@@ -38,7 +38,7 @@ function Quicko.Debug:PrintTable(input, levels, currentLevel)
             print(levelPadding .. '[' .. type(v) .. '] ' .. k .. ' = ' .. tostring(v))
             if currentLevel < levels then
                 if type(v) == 'table' then
-                    Debug:PrintTable(input, levels, currentLevel + 1)
+                    Quicko.Debug:Log(input, levels, currentLevel + 1)
                 end
             end
         end

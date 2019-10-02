@@ -319,13 +319,14 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 			local info = UIDropDownMenu_CreateInfo()
 	
 			for k,v in pairs(items) do
-			  if dd.selected == nil then
-				dd.selected = v
-			  end
-
 			  info = UIDropDownMenu_CreateInfo()
-			  info.text = v
-			  info.value = v
+			  if (type(v) == 'table') then
+				info.text = v.text
+				info.value = v
+			  else
+				info.text = v
+				info.value = v
+			  end
 			  info.arg1 = k
 			  info.arg2 = false
 			  info.checked = false
@@ -339,13 +340,11 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 							self.arg2 = true
 						end				
 					end
-					dd.selected = {
-						index = arg1,
-						value = self.value
-					}
-					dd.items[arg1] = self
+					dd.selected = self
+					dd.selected.index = arg1
+					--dd.items[arg1] = self
 					if callback then
-						callback(arg1, self.value, dd)
+						callback(dd, self, arg1)
 					end
 				end
 			  info.isNotRadio = checkmarks
@@ -375,6 +374,11 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 		dd.count = dd.count + 1
 	end
 
+	dd.selected = {
+		index = 0,
+		text = items[0].text,
+		value = items[0]
+	}
 	return dd
 end
 

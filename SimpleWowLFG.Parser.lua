@@ -51,6 +51,7 @@ function SimpleWowLFG.Parser:FindDungeon(text)
             found = value
         end
     end
+    
     if found == nil then
         for name,value in pairs(SimpleWowLFG.Constants.Dungeons) do
             for _, abbr in pairs(value.Abbreviations) do
@@ -60,13 +61,13 @@ function SimpleWowLFG.Parser:FindDungeon(text)
             end            
         end
     end
+
     for key, dungeon in pairs(ClassicLFG.DungeonManager.Dungeons) do
         for _, abbreviation in pairs(dungeon.Abbreviations) do
             if (ClassicLFG:ArrayContainsValue(message:SplitString(" "), abbreviation)) then
                 return dungeon
             end
         end
-    end
     end
     return found
 end
