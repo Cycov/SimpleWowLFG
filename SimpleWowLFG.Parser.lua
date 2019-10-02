@@ -1,12 +1,12 @@
-if LookingForGroup == nil then
-    LookingForGroup = CreateFrame("Frame", "LookingForGroupFrame");
+if SimpleWowLFG == nil then
+    SimpleWowLFG = CreateFrame("Frame", "SimpleWowLFGFrame");
 end
 
-if LookingForGroup.Parser == nil then
-    LookingForGroup.Parser = {}
+if SimpleWowLFG.Parser == nil then
+    SimpleWowLFG.Parser = {}
 end
 
-LookingForGroup.Parser.Tags = {
+SimpleWowLFG.Parser.Tags = {
     lfg = {
         'lfg'
     },
@@ -19,18 +19,18 @@ LookingForGroup.Parser.Tags = {
     }
 }
 
-function LookingForGroup.Parser:FindLFTag(text)
+function SimpleWowLFG.Parser:FindLFTag(text)
     local found
-    for _, tag in pairs(LookingForGroup.Parser.Tags.lfm) do
+    for _, tag in pairs(SimpleWowLFG.Parser.Tags.lfm) do
         if (string.find(text, tag)) then
             found = true
             break
         end
     end
     if found then
-        return LookingForGroup.Parser.Tags.lfm
+        return SimpleWowLFG.Parser.Tags.lfm
     else
-        for _, tag in pairs(LookingForGroup.Parser.Tags.lfg) do
+        for _, tag in pairs(SimpleWowLFG.Parser.Tags.lfg) do
             if (string.find(text, tag)) then
                 found = true
                 break
@@ -38,21 +38,21 @@ function LookingForGroup.Parser:FindLFTag(text)
         end
     end
     if found then
-        return LookingForGroup.Parser.Tags.lfg
+        return SimpleWowLFG.Parser.Tags.lfg
     else
         return nil
     end    
 end
 
-function LookingForGroup.Parser:FindDungeon(text)
+function SimpleWowLFG.Parser:FindDungeon(text)
     local found
-    for name,value in pairs(LookingForGroup.Constants.Dungeons) do
+    for name,value in pairs(SimpleWowLFG.Constants.Dungeons) do
         if string.find(text, string.lower(name)) then
             found = value
         end
     end
     if found == nil then
-        for name,value in pairs(LookingForGroup.Constants.Dungeons) do
+        for name,value in pairs(SimpleWowLFG.Constants.Dungeons) do
             for _, abbr in pairs(value.Abbreviations) do
                if string.find(text, abbr) then
                     found = value
@@ -71,10 +71,9 @@ function LookingForGroup.Parser:FindDungeon(text)
     return found
 end
 
-function LookingForGroup.Parser:Parse(message)
+function SimpleWowLFG.Parser:Parse(message)
     local parsed = {
         original = message
     }
     message = string.lower(message)
-
 end
