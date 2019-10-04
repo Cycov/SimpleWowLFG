@@ -49,3 +49,15 @@ function Quicko.Debug:Log(input, levels, currentLevel)
         print(input)
     end
 end
+
+function Quicko.Debug:CompareTableValues(items, fieldName, value)
+    local txt = ''
+    for k,v in pairs(items) do
+        if v[fieldName] == value then
+            txt = txt .. '|cff00ff00T|r'
+        else
+            txt = txt .. '|cffff0000F|r'
+        end 
+    end
+    print(txt)
+end

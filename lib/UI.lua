@@ -308,74 +308,104 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 		checkmarks = false
 	end
 
+	dd.checkmarks = checkmarks
+	dd.count = 0
+	dd.items = {}
 	dd:ClearAllPoints()
 	dd:SetPoint("TOPLEFT", x, y)
 	UIDropDownMenu_SetWidth(dd, width, 0)
 
-	dd.count = 0
-	dd.items = {}
+	dd.ButtonClickedCheckmarks = function(self, arg1, arg2, checked)
+		if ( UIDropDownMenuButton_GetChecked(self) ) then
+			table.insert(dd.selectedItems, self)
+			dd.items[arg1].checked = true
+		else
+			table.remove(dd.selectedItems, Quicko.Functions:FindIndex(dd.selectedItems, self))
+			dd.items[arg1].checked = false
+		end
+		if callback then
+			callback(dd, self, UIDropDownMenuButton_GetChecked(self), arg1)
+		end
+	end
+
+	dd.ButtonClicked = function(self, arg1, arg2, checked)
+		UIDropDownMenu_SetSelectedID(dd, arg1)
+		dd.selectedItem = self
+		dd.selectedItem.index = arg1
+		Quicko.Functions:SetProprety(dd.items, 'checked', false, self)
+		if callback then
+			callback(dd, self, UIDropDownMenuButton_GetChecked(self), arg1) -- function(dropdown, item, checked, index)
+		end
+	end
+
+	dd.AddItem = function(self, item, index)
+		if index == nil then
+			index = dd.count
+		end
+		local info = {}
+		if (type(item) == 'table') then
+		  info.text = item.text
+		  info.value = item
+		else
+		  info.text = item
+		  info.value = item
+		end
+		
+		info.arg1 = index
+		info.arg2 = false
+
+		if checkmarks == true then
+		    dd.selectedItems = {}
+			if type(item) == 'table' and item.checked == true then
+				info.checked = true
+			else
+				info.checked = false
+			end
+			info.keepShownOnClick = 1;
+			info.classicChecks = true;
+			info.func = dd.ButtonClickedCheckmarks
+		else
+			dd.selectedItem = dd.selectedItem or {
+				index = 0,
+				text = item.text,
+				value = item
+			}
+			info.checked = false
+			info.func = dd.ButtonClicked
+		end
+		table.insert(dd.items, info)
+		dd.count = dd.count + 1
+	end
+
+	
+	for k,v in pairs(items) do
+		dd:AddItem(v, k)
+	end
+
 	UIDropDownMenu_Initialize(dd,
 		function(self,level)
-			local info = UIDropDownMenu_CreateInfo()
-
-			for k,v in pairs(items) do
-				dd.selectedItem = dd.selectedItem or {
-					index = 0,
-					text = v.text,
-					value = v
-				}
-			  info = UIDropDownMenu_CreateInfo()
-			  if (type(v) == 'table') then
-				info.text = v.text
-				info.value = v
-			  else
-				info.text = v
-				info.value = v
-			  end
-			  info.arg1 = k
-			  info.arg2 = false
-			  info.checked = false
-			  info.func = function(self, arg1, arg2, checked)
-					if not checkmarks then
-						UIDropDownMenu_SetSelectedID(dd, arg1)
-					else
-						if self.arg2 then
-							self.arg2 = false
-						else
-							self.arg2 = true
-						end
-					end
-					dd.selectedItem = self
-					dd.selectedItem.index = arg1
-					if callback then
-						callback(dd, self, arg1)
-					end
-				end
-			  info.isNotRadio = checkmarks
-			  table.insert(dd.items, info)
-			  UIDropDownMenu_AddButton(info, level)
-			  dd.count = dd.count + 1
+			for k,v in pairs(dd.items) do
+				UIDropDownMenu_AddButton(v, level)				
 			end
 	   end)
 
 
+	function dd:SetSelected(index, selected)
+		if checkmarks == false then
+			UIDropDownMenu_SetSelectedID(dd, index);
+		else
+			dd.items.checked = selected
+		end
+	end
+
 	if checkmarks then
-		UIDropDownMenu_SetText(dd,text)
+		if text then
+			UIDropDownMenu_SetText(dd,text)
+		else
+			UIDropDownMenu_SetText(dd,'Mixed')
+		end
 	else
 		UIDropDownMenu_SetSelectedID(dd, 1)
-	end
-
-	function dd:SetSelected(index)
-		UIDropDownMenu_SetSelectedID(dd, index);
-	end
-
-	function dd:AddItem(text, value)
-		local info = UIDropDownMenu_CreateInfo()
-		info.text = text
-		info.value = value
-		info.func = function() UIDropDownMenu_SetSelectedID(dd, dd.count); callback(dd.count, v, dd) end
-		UIDropDownMenu_AddButton(info, nil)
-		dd.count = dd.count + 1
 	end
 
 	return dd
@@ -661,7 +691,7 @@ function Quicko.UI:NewWindowBasic(name, title, height, width, frameStrata, displ
 	return window
 end
 
-function Quicko.UI:NewWindowDefault(name, title, height, width)
+function Quicko.UI:NewWindowDefault(name, title, height, width, scrollable)
 	local window = CreateFrame("Frame", name, UIParent, "UIPanelDialogTemplate");
 
 	height = height or 425
@@ -682,6 +712,35 @@ function Quicko.UI:NewWindowDefault(name, title, height, width)
     window.TitleLabel = window:CreateFontString(name.."_TitleLabel","BACKGROUND","GameFontNormal");
     window.TitleLabel:SetText(title)
     window.TitleLabel:SetPoint("TOP",0,-10)
-    window.TitleLabel:SetTextHeight(12)
+	window.TitleLabel:SetTextHeight(12)
+	
+	if scrollable then
+		scrollframe = CreateFrame("ScrollFrame", nil, window)
+		scrollframe:SetPoint("TOPLEFT", 12, -32)
+		scrollframe:SetPoint("BOTTOMRIGHT", 0, 12)
+		window.scrollframe = scrollframe
+
+		--scrollbar
+		scrollbar = CreateFrame("Slider", nil, scrollframe, "UIPanelScrollBarTemplate")
+		scrollbar:SetPoint("TOPLEFT", scrollframe, "TOPRIGHT", -25, -15)
+		scrollbar:SetPoint("BOTTOMLEFT", scrollframe, "BOTTOMRIGHT", -25, 15)
+		scrollbar:SetMinMaxValues(1, 200)
+		scrollbar:SetValueStep(1)
+		scrollbar.scrollStep = 1
+		scrollbar:SetValue(0)
+		scrollbar:SetWidth(16)
+		scrollbar:SetScript("OnValueChanged",
+			function (self, value)
+				self:GetParent():SetVerticalScroll(value)
+			end)
+		window.scrollbar = scrollbar
+
+		--content frame
+		local content = CreateFrame("Frame", nil, scrollframe)
+		content:SetSize(scrollframe:GetHeight(), scrollframe:GetWidth())
+
+		window.contentFrame = content
+		scrollframe:SetScrollChild(content)
+	end
 	return window
 end

@@ -81,17 +81,18 @@ function SimpleWowLFG:InitUI()
 					Quicko.Functions:ternary(SimpleWowLFG.Constants.Author.Email ~= "","\nFor any information mail me at "..SimpleWowLFG.Constants.Author.Email,"")
 			);
 	table.insert(UISpecialFrames,basename);
-	-- SimpleWowLFG.BroadcastFrame:Hide()
+	SimpleWowLFG.BroadcastFrame:Hide()
 	local parent = SimpleWowLFG.BroadcastFrame;
 
 	local instances = {}
 
 	for _,dungeon in pairs(SimpleWowLFG:GetDungeonsSorted()) do
 		dungeon.text = dungeon:GetColor(dungeon) .. dungeon.Name .. ' ' .. dungeon.MinLevel .. '-' .. dungeon.MaxLevel
+		dungeon.checked = true
 		table.insert(instances, dungeon)
 	end
 	SimpleWowLFG.Controls = {}
-    SimpleWowLFG.SelectedInstanceDropDown = qUI:NewDropDown(parent,basename .. "_SELECTEDINSTANCE",instances,-2,-17 - paddingTop,183)
+    SimpleWowLFG.SelectedInstanceDropDown = qUI:NewDropDown(parent,basename .. "_SELECTEDINSTANCE",instances,-2,-17 - paddingTop,183, false)
     SimpleWowLFG.Controls.ToggleDpsCheckBox = qUI:NewCheckBox(parent,basename .. "_TOGGLEDPS",'dps',nil,165,-45 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('dps', obj) end)
     SimpleWowLFG.Controls.ToggleHealCheckBox = qUI:NewCheckBox(parent,basename .. "_TOGGLEHEAL",'heal',nil,165,-65 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('heal', obj) end)
     SimpleWowLFG.Controls.ToggleTankCheckBox = qUI:NewCheckBox(parent,basename .. "_TOGGLETANK",'tank',nil,165,-85 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('tank', obj) end)
@@ -104,9 +105,16 @@ function SimpleWowLFG:InitUI()
 
 
 	basename = SimpleWowLFG.Constants.MainFrame.Name
-	SimpleWowLFG.MainFrame = qUI:NewWindowDefault(basename,'Existing groups')
-	SimpleWowLFG.MainFrame:Hide()
-	qUI:NewAccordionCollection(basename .. 'AccordionCollection1', SimpleWowLFG.MainFrame, 0, -45, SimpleWowLFG.MainFrame:GetWidth(), 'TOP', {
+	SimpleWowLFG.MainFrame = qUI:NewWindowDefault(basename,'Existing groups', nil, nil, true)
+	-- SimpleWowLFG.MainFrame.TrackedDungeonsFilter = qUI:NewDropDown(SimpleWowLFG.MainFrame, basename .. 'TrackedDungeonsFilter', instances, 0, -25, SimpleWowLFG.MainFrame:GetWidth() - 50, 
+	-- function(dropdown, item, checked, index)
+	-- 	print('-------------')
+	-- 	for k,v in pairs(dropdown.selectedItems) do
+	-- 		print(k .. '-' .. v.value.text)
+	-- 	end
+	-- end, true, 'Tracked dungeons')
+	-- SimpleWowLFG.MainFrame:Hide()
+	local accord = qUI:NewAccordionCollection(basename .. 'AccordionCollection1', scrollframe, -45, -15, SimpleWowLFG.MainFrame.scrollframe:GetWidth(), 'TOP', {
 		{
 			text = 'pew1',
 			height = 100
@@ -120,11 +128,14 @@ function SimpleWowLFG:InitUI()
 			height = 200
 		},
 	})
+	SimpleWowLFG.MainFrame.scrollframe:SetScrollChild(accord)
 end
 
 function SimpleWowLFG:CheckedChanged(source, object)
     checkBoxes[source] = object:GetChecked()
 end
+
+-- function SimpleWowLFG:
 
 function SimpleWowLFG:TimerTick(sender)
 	for index,value in pairs(LFGChannels) do

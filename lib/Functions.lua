@@ -20,3 +20,22 @@ function Quicko.Functions:splitString(inputstr, separator)
     end
     return t
 end
+
+function Quicko.Functions:FindIndex(items, value)
+    local index
+    for k,v in pairs(items) do
+        if v == value then
+            index = k
+            return index
+        end
+    end
+    return index
+end
+
+function Quicko.Functions:SetProprety(items, propName, propValue, exception)
+    for k,v in pairs(items) do
+        if v ~= exception then
+            v[propName] = propValue
+        end
+    end
+end
