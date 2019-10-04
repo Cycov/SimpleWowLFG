@@ -7,7 +7,7 @@ function SimpleWowLFG:InitTables(force)
     if SimpleWowLFG.Constants == nil or force == true then
         SimpleWowLFG.Constants = {
             Name = "SimpleWowLFG",
-            DisplayName = "Looking For Group",
+            DisplayName = "Simple Wow LFG",
             Author = {
                 Name = "Cidra",
                 Email = "circadragos@yahoo.com",
@@ -22,7 +22,7 @@ function SimpleWowLFG:InitTables(force)
             },
             MainFrame = {
                 Name = "MainFrame",
-                Title = "Looking For Group",
+                Title = "Simple Wow LFG",
                 Height = 140,
                 Width = 230,
                 FrameStrata = "MEDIUM",
@@ -60,11 +60,11 @@ function SimpleWowLFG:AddDungeon(name, size, minLevel, maxLevel, location, abbre
             if lvl < minLvl then
                 return '|cffff0000'
             elseif minLvl <= lvl and lvl < minLvl + int then
-                return '|cffeb8f34'                
+                return '|cffeb8f34'
             elseif minLvl + int < lvl and lvl < minLvl + int * 2 then
-                return '|cfffff53d'                 
+                return '|cfffff53d'
             elseif minLvl + int * 2 < lvl and lvl < maxLvl then
-                return '|cff26c71e'                
+                return '|cff26c71e'
             elseif maxLvl < lvl then
                 return '|cff9c9c9c'
             else
@@ -80,10 +80,10 @@ function SimpleWowLFG:GetDungeonsSorted()
     for _,v in pairs(SimpleWowLFG.Constants.Dungeons) do
         table.insert( dungeons,v)
     end
-    
+
     table.sort(dungeons, function(a,b)
         return a.MinLevel < b.MinLevel
-    end)    
+    end)
     return dungeons
 end
 
@@ -100,7 +100,7 @@ SimpleWowLFG:AddDungeon("The Scarlet Monastery: Library", 5, 29, 39, "Tirisfal G
 SimpleWowLFG:AddDungeon("The Scarlet Monastery: Armory", 5, 32, 42, "Tirisfal Glades", "sm armory", {"sm"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-SCARLETMONASTERY")
 SimpleWowLFG:AddDungeon("The Scarlet Monastery: Cathedral", 5, 34, 44, "Tirisfal Glades", "sm cathedral", {"sm"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-SCARLETMONASTERY")
 SimpleWowLFG:AddDungeon("Razorfen Downs", 5, 33, 43, "Barrens", "rfd", {"rfd"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-RAZORFENDOWNS")
-SimpleWowLFG:AddDungeon("Uldaman", 5, 35, 47, "Badlands", "ulda", {"ulda"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-ULDAMAN")
+SimpleWowLFG:AddDungeon("Uldaman", 5, 42, 52, "Badlands", "ulda", {"ulda"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-ULDAMAN")
 SimpleWowLFG:AddDungeon("Zul'Farak", 5, 40, 48, "Tanaris", "zf", {"zf"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-ZULFARAK")
 SimpleWowLFG:AddDungeon("Maraudon", 5, 46, 55, "Desolace", "maraudon", {"maraudon", "mara"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-MARAUDON")
 SimpleWowLFG:AddDungeon("Temple of Atal'Hakkar", 5, 49, 58, "Swamp of Sorrows", "st", {"st", "toa", "atal", "sunken temple"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-SUNKENTEMPLE")
@@ -111,5 +111,5 @@ SimpleWowLFG:AddDungeon("Stratholme", 5, 56, 60, "Eastern Plaguelands", "strat",
 SimpleWowLFG:AddDungeon("Scholomance", 5, 56, 60, "Eastern Plaguelands", "scholo", {"scholo"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-SCHOLOMANCE")
 SimpleWowLFG:AddDungeon("Molten Core", 40, 60, 60, "Blackrock Depths", "mc", {"mc"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-MOLTENCORE")
 SimpleWowLFG:AddDungeon("Onyxia's Lair", 40, 60, 60, "Dustwallow Marsh", "ony", {"ony", "onyxia"}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\LFGIcon-OnyxiaEncounter")
-SimpleWowLFG:AddDungeon("Custom", 40, 1, 120, "Everywhere", "", {}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-BREW")
+-- SimpleWowLFG:AddDungeon("Custom", 40, 1, 120, "Everywhere", "", {}, SimpleWowLFG.E.Faction.BOTH, "Interface\\LFGFRAME\\UI-LFG-BACKGROUND-BREW")
 

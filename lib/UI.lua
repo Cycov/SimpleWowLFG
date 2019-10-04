@@ -32,8 +32,8 @@ function Quicko.UI:ShowMessage(name,message,title,btntext)
 		er = true
 	end
 	StaticPopupDialogs[name] = {
-	  text = Functions:ternary(title~="","|cFFFFFF00"..title.."|r\n\n"..message,message),
-	  button1 = Functions:ternary(btntext~="",btntext,"OK"),
+	  text = Quicko.Functions:ternary(title~="","|cFFFFFF00"..title.."|r\n\n"..message,message),
+	  button1 = Quicko.Functions:ternary(btntext~="",btntext,"OK"),
 	  OnAccept = function()
 
 	  end,
@@ -317,8 +317,13 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 	UIDropDownMenu_Initialize(dd,
 		function(self,level)
 			local info = UIDropDownMenu_CreateInfo()
-	
+
 			for k,v in pairs(items) do
+				dd.selectedItem = dd.selectedItem or {
+					index = 0,
+					text = v.text,
+					value = v
+				}
 			  info = UIDropDownMenu_CreateInfo()
 			  if (type(v) == 'table') then
 				info.text = v.text
@@ -338,11 +343,10 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 							self.arg2 = false
 						else
 							self.arg2 = true
-						end				
+						end
 					end
-					dd.selected = self
-					dd.selected.index = arg1
-					--dd.items[arg1] = self
+					dd.selectedItem = self
+					dd.selectedItem.index = arg1
 					if callback then
 						callback(dd, self, arg1)
 					end
@@ -354,7 +358,7 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 			end
 	   end)
 
-	
+
 	if checkmarks then
 		UIDropDownMenu_SetText(dd,text)
 	else
@@ -374,11 +378,6 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 		dd.count = dd.count + 1
 	end
 
-	dd.selected = {
-		index = 0,
-		text = items[0].text,
-		value = items[0]
-	}
 	return dd
 end
 
@@ -398,7 +397,7 @@ function Quicko.UI:NewImage(name, parent, x, y, height, width, texture, anchor, 
 		tex:SetTexCoord(texCoordinates.left, texCoordinates.right, texCoordinates.top, texCoordinates.bottom)
 	end
 	img.texture = tex
-	
+
 	return img
 end
 
@@ -468,7 +467,7 @@ function Quicko.UI:NewAccordion(name, parent, text, x, y, height, width, anchor)
 		accord.closed = false
 		accord.OnToggle(false)
 	end
-	
+
 	accord.Close = function()
 		accord.contentFrame:Hide()
 		accord:SetHeight(accord.closedHeight)
@@ -564,7 +563,7 @@ function Quicko.UI:NewAccordionCollection(name, parent, x, y, width, anchor, ele
 				found = k
 			end
 		end
-		
+
 		accCol:SetHeight(accCol:GetHeight() - accord.items[found]:GetHeight() - spacing)
 		return table.remove( accord.items, found )
 	end
@@ -651,7 +650,7 @@ function Quicko.UI:NewWindowBasic(name, title, height, width, frameStrata, displ
         if helpAction then
             if type(helpAction) == 'string' then
                 window.HelpButton:SetScript("OnClick",function()
-                    UI:ShowMessage(name,helpAction,"About")
+                    Quicko.UI:ShowMessage(name,helpAction,"About")
                 end);
             else
                 window.HelpButton:SetScript("OnClick",helpClickedCallback)

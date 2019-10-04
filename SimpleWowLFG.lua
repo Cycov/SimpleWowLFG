@@ -39,8 +39,8 @@ function SimpleWowLFG:OnLoad()
 	for index,value in pairs(LFGChannels) do
 		channels = channels .. value .. ','
 	end
-	SimpleWowLFG.ChannelsTbox:SetText(channels)
-	SimpleWowLFG.IntervalTbox:SetText(LFGInterval)
+	SimpleWowLFG.Controls.ChannelsSelectEditBox:SetText(channels)
+	SimpleWowLFG.Controls.IntervalEditBox:SetText(LFGInterval)
 
 	if timer == nil then
 		timer = qTimers:ScheduleTimer('timer1', tonumber(LFGInterval), true, false, SimpleWowLFG.TimerTick)
@@ -90,18 +90,19 @@ function SimpleWowLFG:InitUI()
 		dungeon.text = dungeon:GetColor(dungeon) .. dungeon.Name .. ' ' .. dungeon.MinLevel .. '-' .. dungeon.MaxLevel
 		table.insert(instances, dungeon)
 	end
-	
+	SimpleWowLFG.Controls = {}
     SimpleWowLFG.SelectedInstanceDropDown = qUI:NewDropDown(parent,basename .. "_SELECTEDINSTANCE",instances,-2,-17 - paddingTop,183)
-    qUI:NewCheckBox(parent,basename .. "_TOGGLEDPS",'dps',nil,165,-45 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('dps', obj) end)
-    qUI:NewCheckBox(parent,basename .. "_TOGGLEHEAL",'heal',nil,165,-65 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('heal', obj) end)
-    qUI:NewCheckBox(parent,basename .. "_TOGGLETANK",'tank',nil,165,-85 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('tank', obj) end)
+    SimpleWowLFG.Controls.ToggleDpsCheckBox = qUI:NewCheckBox(parent,basename .. "_TOGGLEDPS",'dps',nil,165,-45 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('dps', obj) end)
+    SimpleWowLFG.Controls.ToggleHealCheckBox = qUI:NewCheckBox(parent,basename .. "_TOGGLEHEAL",'heal',nil,165,-65 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('heal', obj) end)
+    SimpleWowLFG.Controls.ToggleTankCheckBox = qUI:NewCheckBox(parent,basename .. "_TOGGLETANK",'tank',nil,165,-85 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('tank', obj) end)
 	qUI:NewLabel(parent, basename .. "_STATICLABEL1",'Channels',17,-53 - paddingTop)
-	SimpleWowLFG.ChannelsTbox = qUI:NewEditBox(parent,basename .. "_CHANNELSTBOX",78,-50 - paddingTop,83, false, 10)
+	SimpleWowLFG.Controls.ChannelsSelectEditBox = qUI:NewEditBox(parent,basename .. "_CHANNELSTBOX",78,-50 - paddingTop,83, false, 10)
 	qUI:NewLabel(parent, basename .. "_STATICLABEL2",'Interval',17,-78 - paddingTop)
-	SimpleWowLFG.IntervalTbox = qUI:NewEditBox(parent,basename .. "_INTERVALTBOX",78,-75 - paddingTop,30, true, 3)
+	SimpleWowLFG.Controls.IntervalEditBox = qUI:NewEditBox(parent,basename .. "_INTERVALTBOX",78,-75 - paddingTop,30, true, 3)
     qUI:NewButton(parent,basename .. "_INTERVALSAVEBTN",'Save',115,-75 - paddingTop,20,50, SimpleWowLFG.SaveDataPressed)
 	SimpleWowLFG.ToggleBtn = qUI:NewButton(parent,basename .. "_TOGGLERUNNING",'Run',15,-110 - paddingTop,20,200,SimpleWowLFG.ToggleRunningPressed)
-	
+
+
 	basename = SimpleWowLFG.Constants.MainFrame.Name
 	SimpleWowLFG.MainFrame = qUI:NewWindowDefault(basename,'Existing groups')
 	SimpleWowLFG.MainFrame:Hide()
@@ -127,17 +128,23 @@ end
 
 function SimpleWowLFG:TimerTick(sender)
 	for index,value in pairs(LFGChannels) do
-		Quicko.Debug:PrintTable(SimpleWowLFG.SelectedInstanceDropDown.selected.value)
-		-- Quicko.Console:SendChatMessage('LFM ' .. SimpleWowLFG.SelectedInstanceDropDown.selected.value.Abbreviation .. ' ' ..
-		-- 										Quicko.Functions:ternary(checkBoxes['dps'],'', 'dps') ..
-		-- 										Quicko.Functions:ternary(checkBoxes['heal'],'', ', heal') ..
-		-- 										Quicko.Functions:ternary(checkBoxes['tank'],'', ', tank'),'CHANNEL',tonumber(value))
+		if SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value == nil then
+			Quicko.Debug:Log(SimpleWowLFG.SelectedInstanceDropDown.selectedItem)
+		end
+		if SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value.Abbreviation == nil then
+			Quicko.Debug:Log(SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value)
+		end
+		Quicko.Console:SendChatMessage('LFM ' .. SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value.Abbreviation:upper() .. ' ' ..
+												Quicko.Functions:ternary(checkBoxes['dps'],'', 'dps') ..
+												Quicko.Functions:ternary(checkBoxes['heal'],'', ', heal') ..
+												Quicko.Functions:ternary(checkBoxes['tank'],'', ', tank'),'CHANNEL',tonumber(value))
 	end
 end
 
 function SimpleWowLFG:SaveDataPressed()
-	LFGChannels = Quicko.Functions:splitString(SimpleWowLFG.ChannelsTbox:GetText(), ',')
-	LFGInterval = SimpleWowLFG.IntervalTbox:GetText()
+	LFGChannels = Quicko.Functions:splitString(SimpleWowLFG.Controls.ChannelsSelectEditBox:GetText(), ',')
+	LFGInterval = tonumber(SimpleWowLFG.Controls.IntervalEditBox:GetText())
+	timer:SetInterval(LFGInterval)
 	local text = 'Looking for group in channels '
 	for index,value in pairs(LFGChannels) do
 		text = text .. value .. ', '
@@ -149,10 +156,24 @@ end
 function SimpleWowLFG:ToggleRunningPressed()
 	if SimpleWowLFG.running then
 		SimpleWowLFG.ToggleBtn:SetText('Run');
-		Components.Timers:DisableTimer(timer);
+		qTimers:DisableTimer(timer);
+
+		SimpleWowLFG.Controls.ToggleDpsCheckBox:Enable()
+		SimpleWowLFG.Controls.ToggleHealCheckBox:Enable()
+		SimpleWowLFG.Controls.ToggleTankCheckBox:Enable()
+		SimpleWowLFG.Controls.ChannelsSelectEditBox:Enable()
+		SimpleWowLFG.Controls.IntervalEditBox:Enable()
+		SimpleWowLFG.SelectedInstanceDropDown:Enable()
 	else
 		SimpleWowLFG.ToggleBtn:SetText('Pause');
-		qTimers:EnableTimer(timer);
+		qTimers:EnableTimer(timer, true);
+
+		SimpleWowLFG.Controls.ToggleDpsCheckBox:Disable()
+		SimpleWowLFG.Controls.ToggleHealCheckBox:Disable()
+		SimpleWowLFG.Controls.ToggleTankCheckBox:Disable()
+		SimpleWowLFG.Controls.ChannelsSelectEditBox:Disable()
+		SimpleWowLFG.Controls.IntervalEditBox:Disable()
+		SimpleWowLFG.SelectedInstanceDropDown:Disable()
 	end
 	SimpleWowLFG.running = not SimpleWowLFG.running;
 end

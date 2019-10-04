@@ -32,16 +32,16 @@ function Quicko.Components.Timers:ScheduleTimer(name, interval, repeating, enabl
 		table.insert(Quicko.Components.Timers.activeTimers, timer);
 	end
 
-	timer.Enable = function()
-		Components.Timers:EnableTimer(timer.name)
+	timer.Enable = function(self)
+		Quicko.Components.Timers:EnableTimer(self)
 	end
 
-	timer.Disable = function()
-		Components.Timers:DisableTimer(timer.name)
+	timer.Disable = function(self)
+		Quicko.Components.Timers:DisableTimer(self)
 	end
 
-	timer.SetInterval = function(interval)
-		Components.Timers:DisableTimer(timer.name, interval)
+	timer.SetInterval = function(self, interval)
+		Quicko.Components.Timers:ChangeInterval(self, interval)
 	end
 
 	return timer
@@ -51,7 +51,7 @@ function Quicko.Components.Timers:GetTimer(name)
 	if name == nil then
 		error('Expected timer, got nil')
 	end
-	
+
 	for index,value in pairs(Quicko.Components.Timers.activeTimers) do
 		if (value.name == name) then
 			return value
@@ -64,7 +64,7 @@ function Quicko.Components.Timers:RemoveTimer(name)
 	if name == nil then
 		error('Expected timer, got nil')
 	end
-	
+
 	local found = nil
 	for index,value in pairs(Components.Timers.activeTimers) do
 		if (value.name == value.name) then
@@ -86,16 +86,16 @@ function Quicko.Components.Timers:DisableTimer(timer)
 		error('Expected timer object, got ' .. type(timer))
 	end
 
-	for index,value in pairs(Components.Timers.activeTimers) do
+	for index,value in pairs(Quicko.Components.Timers.activeTimers) do
 		if (value.name == timer.name) then
 			value.enabled = false
 			value.total = 0
-			Components.Timers.activeTimers[index] = value
+			Quicko.Components.Timers.activeTimers[index] = value
 		end
 	end
 end
 
-function Quicko.Components.Timers:EnableTimer(timer)
+function Quicko.Components.Timers:EnableTimer(timer, trigger)
 	if timer == nil then
 		error('Expected timer, got nil')
 	end
@@ -106,6 +106,10 @@ function Quicko.Components.Timers:EnableTimer(timer)
 	for index,value in pairs(Quicko.Components.Timers.activeTimers) do
 		if (value.name == timer.name) then
 			value.enabled = true
+			value.total = 0
+			if trigger then
+				value.callback(value)
+			end
 			Quicko.Components.Timers.activeTimers[index] = value
 		end
 	end
@@ -118,12 +122,12 @@ function Quicko.Components.Timers:ChangeInterval(timer, interval)
 	if type(interval) ~= 'number' then
 		error('Expected number got ' .. type(interval) .. ' for parameter "interval"')
 	end
-	
+
 	for index,value in pairs(Quicko.Components.Timers.activeTimers) do
 		if (value.name == timer.name) then
 			value.total = 0
 			value.interval = interval
-			Components.Timers.activeTimers[index] = value
+			Quicko.Components.Timers.activeTimers[index] = value
 		end
 	end
 end
