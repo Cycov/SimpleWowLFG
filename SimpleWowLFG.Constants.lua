@@ -59,13 +59,13 @@ function SimpleWowLFG:AddDungeon(name, size, minLevel, maxLevel, location, abbre
             local int = (self.MaxLevel - self.MinLevel) / 3
             if lvl < minLvl then --red
                 return '|cffff0000'
-            elseif minLvl <= lvl and lvl < minLvl + int then -- orange
+            elseif minLvl < lvl and lvl < minLvl + int then -- orange
                 return '|cffeb8f34'
-            elseif minLvl + int <= lvl and lvl < minLvl + int * 2 then -- yellow
+            elseif minLvl + int < lvl and lvl <= minLvl + int * 2 then -- yellow
                 return '|cfffff53d'
-            elseif minLvl + int * 2 <= lvl and lvl < maxLvl then -- green
+            elseif minLvl + int * 2 < lvl and lvl < maxLvl then -- green
                 return '|cff26c71e'
-            elseif maxLvl <= lvl then -- gray
+            elseif maxLvl < lvl then -- gray
                 return '|cff9c9c9c'
             else -- white
                 return '|cffffffff'

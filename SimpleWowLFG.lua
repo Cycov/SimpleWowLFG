@@ -92,7 +92,7 @@ function SimpleWowLFG:InitUI()
 		table.insert(instances, dungeon)
 	end
 	SimpleWowLFG.Controls = {}
-    SimpleWowLFG.SelectedInstanceDropDown = qUI:NewDropDown(parent,basename .. "_SELECTEDINSTANCE",instances,-2,-17 - paddingTop,183, false)
+    SimpleWowLFG.SelectedInstanceDropDown = qUI:NewDropDown(parent,basename .. "_SELECTEDINSTANCE",instances,-2,-17 - paddingTop,183, SimpleWowLFG.SelectedInstanceDropDownClicked)
     SimpleWowLFG.Controls.ToggleDpsCheckBox = qUI:NewCheckBox(parent,basename .. "_TOGGLEDPS",'dps',nil,165,-45 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('dps', obj) end)
     SimpleWowLFG.Controls.ToggleHealCheckBox = qUI:NewCheckBox(parent,basename .. "_TOGGLEHEAL",'heal',nil,165,-65 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('heal', obj) end)
     SimpleWowLFG.Controls.ToggleTankCheckBox = qUI:NewCheckBox(parent,basename .. "_TOGGLETANK",'tank',nil,165,-85 - paddingTop,function(obj) SimpleWowLFG:CheckedChanged('tank', obj) end)
@@ -100,8 +100,8 @@ function SimpleWowLFG:InitUI()
 	SimpleWowLFG.Controls.ChannelsSelectEditBox = qUI:NewEditBox(parent,basename .. "_CHANNELSTBOX",78,-50 - paddingTop,83, false, 10)
 	qUI:NewLabel(parent, basename .. "_STATICLABEL2",'Interval',17,-78 - paddingTop)
 	SimpleWowLFG.Controls.IntervalEditBox = qUI:NewEditBox(parent,basename .. "_INTERVALTBOX",78,-75 - paddingTop,30, true, 3)
-    qUI:NewButton(parent,basename .. "_INTERVALSAVEBTN",'Save',115,-75 - paddingTop,20,50, SimpleWowLFG.SaveDataPressed)
-	SimpleWowLFG.ToggleBtn = qUI:NewButton(parent,basename .. "_TOGGLERUNNING",'Run',15,-110 - paddingTop,20,200,SimpleWowLFG.ToggleRunningPressed)
+    SimpleWowLFG.Controls.SaveButton = qUI:NewButton(parent,basename .. "_INTERVALSAVEBTN",'Save',115,-75 - paddingTop,20,50, SimpleWowLFG.SaveDataPressed)
+	SimpleWowLFG.Controls.ToggleButton = qUI:NewButton(parent,basename .. "_TOGGLERUNNING",'Run',15,-110 - paddingTop,20,200,SimpleWowLFG.ToggleRunningPressed)
 
 
 	basename = SimpleWowLFG.Constants.MainFrame.Name
@@ -113,7 +113,7 @@ function SimpleWowLFG:InitUI()
 	-- 		print(k .. '-' .. v.value.text)
 	-- 	end
 	-- end, true, 'Tracked dungeons')
-	-- SimpleWowLFG.MainFrame:Hide()
+	SimpleWowLFG.MainFrame:Hide()
 	local accord = qUI:NewAccordionCollection(basename .. 'AccordionCollection1', scrollframe, -45, -15, SimpleWowLFG.MainFrame.scrollframe:GetWidth(), 'TOP', {
 		{
 			text = 'pew1',
@@ -135,14 +135,20 @@ function SimpleWowLFG:CheckedChanged(source, object)
     checkBoxes[source] = object:GetChecked()
 end
 
+function SimpleWowLFG:SelectedInstanceDropDownClicked(self, dropdown, item, checked, index)
+	Quicko.Debug:Log(item.value)
+end
+
 -- function SimpleWowLFG:
 
 function SimpleWowLFG:TimerTick(sender)
 	for index,value in pairs(LFGChannels) do
 		if SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value == nil then
+			print('--------------Value is nil--------------')
 			Quicko.Debug:Log(SimpleWowLFG.SelectedInstanceDropDown.selectedItem)
 		end
 		if SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value.Abbreviation == nil then
+			print('--------------Abbr is nil--------------')
 			Quicko.Debug:Log(SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value)
 		end
 		Quicko.Console:SendChatMessage('LFM ' .. SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value.Abbreviation:upper() .. ' ' ..
@@ -166,25 +172,21 @@ end
 
 function SimpleWowLFG:ToggleRunningPressed()
 	if SimpleWowLFG.running then
-		SimpleWowLFG.ToggleBtn:SetText('Run');
+		SimpleWowLFG.Controls.ToggleButton:SetText('Run');
 		qTimers:DisableTimer(timer);
 
-		SimpleWowLFG.Controls.ToggleDpsCheckBox:Enable()
-		SimpleWowLFG.Controls.ToggleHealCheckBox:Enable()
-		SimpleWowLFG.Controls.ToggleTankCheckBox:Enable()
 		SimpleWowLFG.Controls.ChannelsSelectEditBox:Enable()
 		SimpleWowLFG.Controls.IntervalEditBox:Enable()
 		SimpleWowLFG.SelectedInstanceDropDown:Enable()
+		SimpleWowLFG.Controls.SaveButton:Enable()
 	else
-		SimpleWowLFG.ToggleBtn:SetText('Pause');
+		SimpleWowLFG.Controls.ToggleButton:SetText('Pause');
 		qTimers:EnableTimer(timer, true);
 
-		SimpleWowLFG.Controls.ToggleDpsCheckBox:Disable()
-		SimpleWowLFG.Controls.ToggleHealCheckBox:Disable()
-		SimpleWowLFG.Controls.ToggleTankCheckBox:Disable()
 		SimpleWowLFG.Controls.ChannelsSelectEditBox:Disable()
 		SimpleWowLFG.Controls.IntervalEditBox:Disable()
 		SimpleWowLFG.SelectedInstanceDropDown:Disable()
+		SimpleWowLFG.Controls.SaveButton:Disable()
 	end
 	SimpleWowLFG.running = not SimpleWowLFG.running;
 end

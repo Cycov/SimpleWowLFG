@@ -330,11 +330,14 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 
 	dd.ButtonClicked = function(self, arg1, arg2, checked)
 		UIDropDownMenu_SetSelectedID(dd, arg1)
-		dd.selectedItem = self
-		dd.selectedItem.index = arg1
-		Quicko.Functions:SetProprety(dd.items, 'checked', false, self)
-		if callback then
-			callback(dd, self, UIDropDownMenuButton_GetChecked(self), arg1) -- function(dropdown, item, checked, index)
+		if self.arg2 == name then			
+			dd.selectedItem = self
+			dd.selectedItem.index = arg1
+			Quicko.Functions:SetProprety(dd.items, 'checked', false, self)
+			Quicko.Debug:Log(callback)
+			if callback then
+				callback(dd, self, UIDropDownMenuButton_GetChecked(self), arg1) -- function(dropdown, item, checked, index)
+			end
 		end
 	end
 
@@ -350,9 +353,9 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 		  info.text = item
 		  info.value = item
 		end
-		
+
 		info.arg1 = index
-		info.arg2 = false
+		info.arg2 = name
 
 		if checkmarks == true then
 		    dd.selectedItems = {}
@@ -377,7 +380,7 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 		dd.count = dd.count + 1
 	end
 
-	
+
 	for k,v in pairs(items) do
 		dd:AddItem(v, k)
 	end
@@ -385,7 +388,7 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 	UIDropDownMenu_Initialize(dd,
 		function(self,level)
 			for k,v in pairs(dd.items) do
-				UIDropDownMenu_AddButton(v, level)				
+				UIDropDownMenu_AddButton(v, level)
 			end
 	   end)
 
@@ -713,12 +716,16 @@ function Quicko.UI:NewWindowDefault(name, title, height, width, scrollable)
     window.TitleLabel:SetText(title)
     window.TitleLabel:SetPoint("TOP",0,-10)
 	window.TitleLabel:SetTextHeight(12)
-	
+
 	if scrollable then
 		scrollframe = CreateFrame("ScrollFrame", nil, window)
 		scrollframe:SetPoint("TOPLEFT", 12, -32)
 		scrollframe:SetPoint("BOTTOMRIGHT", 0, 12)
 		window.scrollframe = scrollframe
+
+		-- local texture = content:CreateTexture()
+		-- texture:SetAllPoints()
+		-- texture:SetTexture("Interface\\GLUES\\MainMenu\\Glues-BlizzardLogo")
 
 		--scrollbar
 		scrollbar = CreateFrame("Slider", nil, scrollframe, "UIPanelScrollBarTemplate")
