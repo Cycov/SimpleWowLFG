@@ -16,4 +16,6 @@ lib\Console.lua
 SimpleWowLFG.Enums.lua
 SimpleWowLFG.Constants.lua
 SimpleWowLFG.Parser.lua
+SimpleWowLFG.BroadcastFrame.lua
+SimpleWowLFG.MainFrame.lua
 SimpleWowLFG.lua

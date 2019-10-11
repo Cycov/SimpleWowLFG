@@ -689,7 +689,8 @@ function Quicko.UI:NewWindowBasic(name, title, height, width, frameStrata, displ
             end
         end
 	end
-
+	window:Hide()
+	table.insert(UISpecialFrames,window:GetName())
 	return window
 end
 
