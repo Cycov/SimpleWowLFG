@@ -24,6 +24,8 @@ function SimpleWowLFG:Initialize()
 	-- btn:SetNormalTexture("Interface\\PaperDollInfoFrame\\StatSortArrows");
 
 	-- UI:NewWindowDefault("pewwww", "pom")
+
+	Quicko.UI.Manager()
 end
 
 function SimpleWowLFG:OnLoad()
@@ -113,7 +115,7 @@ function SimpleWowLFG:InitUI()
 	-- 		print(k .. '-' .. v.value.text)
 	-- 	end
 	-- end, true, 'Tracked dungeons')
-	SimpleWowLFG.MainFrame:Hide()
+	-- SimpleWowLFG.MainFrame:Hide()
 	local accord = qUI:NewAccordionCollection(basename .. 'AccordionCollection1', scrollframe, -45, -15, SimpleWowLFG.MainFrame.scrollframe:GetWidth(), 'TOP', {
 		{
 			text = 'pew1',
@@ -135,23 +137,15 @@ function SimpleWowLFG:CheckedChanged(source, object)
     checkBoxes[source] = object:GetChecked()
 end
 
-function SimpleWowLFG:SelectedInstanceDropDownClicked(self, dropdown, item, checked, index)
-	Quicko.Debug:Log(item.value)
+function SimpleWowLFG:SelectedInstanceDropDownClicked(item, checked, index) --self is dropdown
+	SimpleWowLFG.BroadcastFrame.SelectedInstance = item.value
 end
 
 -- function SimpleWowLFG:
 
 function SimpleWowLFG:TimerTick(sender)
 	for index,value in pairs(LFGChannels) do
-		if SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value == nil then
-			print('--------------Value is nil--------------')
-			Quicko.Debug:Log(SimpleWowLFG.SelectedInstanceDropDown.selectedItem)
-		end
-		if SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value.Abbreviation == nil then
-			print('--------------Abbr is nil--------------')
-			Quicko.Debug:Log(SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value)
-		end
-		Quicko.Console:SendChatMessage('LFM ' .. SimpleWowLFG.SelectedInstanceDropDown.selectedItem.value.Abbreviation:upper() .. ' ' ..
+		Quicko.Console:SendChatMessage('LFM ' .. SimpleWowLFG.BroadcastFrame.SelectedInstance.Abbreviation:upper() .. ' ' ..
 												Quicko.Functions:ternary(checkBoxes['dps'],'', 'dps') ..
 												Quicko.Functions:ternary(checkBoxes['heal'],'', ', heal') ..
 												Quicko.Functions:ternary(checkBoxes['tank'],'', ', tank'),'CHANNEL',tonumber(value))

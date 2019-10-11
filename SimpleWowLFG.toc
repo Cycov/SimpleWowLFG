@@ -9,6 +9,7 @@ lib\Debug.lua
 lib\Functions.lua
 lib\Events.lua
 lib\UI.Buttons.lua
+lib\UI.Manager.lua
 lib\UI.lua
 lib\Components.Timers.lua
 lib\Console.lua

@@ -334,9 +334,8 @@ function Quicko.UI:NewDropDown(parent,name,items,x,y,width,callback,checkmarks,t
 			dd.selectedItem = self
 			dd.selectedItem.index = arg1
 			Quicko.Functions:SetProprety(dd.items, 'checked', false, self)
-			Quicko.Debug:Log(callback)
 			if callback then
-				callback(dd, self, UIDropDownMenuButton_GetChecked(self), arg1) -- function(dropdown, item, checked, index)
+				callback(dd, self, UIDropDownMenuButton_GetChecked(self), arg1) -- function(item, checked, index), self - dropdown
 			end
 		end
 	end
